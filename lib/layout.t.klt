@@ -1,5 +1,5 @@
-%ifndef pathlayout_t
-%define pathlayout_t
+%ifndef layout_t
+%define layout_t
 
 --file types
 %define CSV_TYPE 1
@@ -20,4 +20,4 @@ TYPE
     sepChar : STRING[3]
   ENDSTRUCTURE
 
-%endif --pathlayout_t
+%endif --layout_t

@@ -17,7 +17,7 @@ VAR
 %include display.klh
 
 -- layout object
-%class tstlay('pathlayout.klc','pathlayout.klh','defaultpathlayout.klt')
+%class tstlay('layout.klc','layout.klh','defaultlayout.klt')
 
 
 ROUTINE clear_list

@@ -40,7 +40,7 @@ ROUTINE createAttr
 %mode push
 %mode string QQQ "`" "`" "\\"
 %define layout_type `TYPE
-  LAYOUT_STRUCT FROM pathlayout = STRUCTURE
+  LAYOUT_STRUCT FROM layout = STRUCTURE
     layer  : INTEGER
     code   : INTEGER
     depth  : REAL

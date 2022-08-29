@@ -1,6 +1,6 @@
 PROGRAM class_name
 %NOBUSYLAMP
-%COMMENT = 'pathlayout'
+%COMMENT = 'layout'
 %NOLOCKGROUP
 
 %include namespace.m
@@ -9,8 +9,8 @@ PROGRAM class_name
 %include systemlib.klt
 %include pathlib.klt
 
-%include pathlayout.t.klt
-%include pathlayout.deps.klt
+%include layout.t.klt
+%include layout.deps.klt
 
 %define BASE_CLASSNAME class_name
 
@@ -36,7 +36,7 @@ csvclass_friends(CSV_OBJECT_NAME)
 csv_make_define(CSV_OBJECT_NAME)
 
 %else
-%error 'file type not yet implemented for pathlayout.'
+%error 'file type not yet implemented for layout object.'
 %endif
 
 %include systemlib.datatype.klh
@@ -44,16 +44,16 @@ csv_make_define(CSV_OBJECT_NAME)
 
 %defeval class_name BASE_CLASSNAME
 
-%include pathlayout.private.klh
-%include pathlayout.klh
+%include layout.private.klh
+%include layout.klh
 
 --private
 
   --load interfaces
 %ifdef LAYOUT_FILE_TYPE CSV_TYPE
-%include pathlayout.csv.klt
+%include layout.csv.klt
 %else
-%error 'file type not yet implemented for pathlayout.'
+%error 'file type not yet implemented for layout object.'
 %endif
 
 -- user macro

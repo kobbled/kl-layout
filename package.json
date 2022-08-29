@@ -1,6 +1,6 @@
 {
   "manver" : "1",
-  "project" : "pathlayout",
+  "project" : "layout",
   "description" : "Define a generic file layout to pass into a path object",
   "version" : "0.0.1",
   "license" : "MIT",
