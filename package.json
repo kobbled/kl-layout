@@ -11,7 +11,8 @@
   ],
   "tests" : [
     "test/test_layout.kl",
-    "test/data/test3599.csv"
+    "test/data/test3599.csv",
+    "test/data/mpoly0001.csv"
   ],
   "tests-includes" :[
     "test/configs"
