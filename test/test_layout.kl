@@ -125,13 +125,14 @@ BEGIN
   --show display
   display__show
 
-  -- --static path file
-  -- t_spth_buff
+  --static path file
+  t_spth_buff
 
   --polygon file
   t_sply_buff
   
-  -- --delete
-  -- tstlay__delete
+  --delete
+  tstlay__delete
+  tstldw__delete
 
 END test_layout
