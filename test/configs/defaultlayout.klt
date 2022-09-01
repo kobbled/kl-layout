@@ -7,6 +7,19 @@
 ------------------
 %define CSV_OBJECT_NAME tstcsv
 
+--template dependencies
+---------------
+%mode push
+%mode string QQQ "$" "$" "\\"
+%define type_includes $
+%include pathlib.klt
+$
+
+%define header_includes $
+
+$
+%mode pop
+
 ------------------
 --attributes
 -------------------------

@@ -7,7 +7,9 @@ PROGRAM class_name
 
 %include errors.klt
 %include systemlib.klt
-%include pathlib.klt
+
+--load template specific includes
+type_includes
 
 %include layout.t.klt
 %include layout.deps.klt
@@ -20,7 +22,6 @@ layout_type
 VAR
   filetyp : INTEGER
   attribPntrs : ARRAY[NUM_OF_ATTRIBUTES] OF t_ATTRPNTR
-  coord_system : t_COORD_SYS
   nde : LAYOUT_STRUCT
   buffer : PATH nodedata = LAYOUT_STRUCT
   prev_data : t_DATA_TYPE
@@ -40,7 +41,9 @@ csv_make_define(CSV_OBJECT_NAME)
 %endif
 
 %include systemlib.datatype.klh
-%from pathlib.klh %import new_coord_sys
+
+--load template specific includes
+header_includes
 
 %defeval class_name BASE_CLASSNAME
 
@@ -84,9 +87,6 @@ ROUTINE new
     --initialize read file
     loadfile(filename)
 
-    --select coordinate system the layout is in
-    coord_system = paths__new_coord_sys(system, z_axis)
-
     --load attributes
     createAttr
 
@@ -116,11 +116,6 @@ ROUTINE new_attr_pntr
     
     RETURN(att)
   END new_attr_pntr
-
-ROUTINE get_coord_sys
-  BEGIN
-    RETURN(coord_system)
-  END get_coord_sys
 
 ROUTINE get_index_base
   BEGIN

@@ -20,11 +20,11 @@
     "ktransw-macros",
     "errors",
     "systemlib",
-    "csv",
-    "pathlib"
+    "csv"
   ],
   "tests-depends" :  [
     "display",
-    "pose"
+    "pose",
+    "pathlib"
   ]
 }
