@@ -6,7 +6,7 @@ ROUTINE loadfile(filename : STRING)
 
 ROUTINE openfile
   BEGIN
-    `CSV_OBJECT_NAME`__open
+    `CSV_OBJECT_NAME`__open_read
     `CSV_OBJECT_NAME`__read_header
   END openfile
 
