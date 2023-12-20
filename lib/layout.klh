@@ -8,7 +8,7 @@ header_if -- ifndef class
 header_def -- define class
 
 declare_member(class_name,new,class_name,new)
-ROUTINE new(filename : STRING) FROM class_name
+ROUTINE new(fname : STRING) FROM class_name
 declare_member(class_name,delete,class_name,del)
 ROUTINE delete FROM class_name
 

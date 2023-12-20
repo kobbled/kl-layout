@@ -20,6 +20,7 @@ type_includes
 layout_type
 
 VAR
+  filename : STRING[20]
   filetyp : INTEGER
   attribPntrs : ARRAY[NUM_OF_ATTRIBUTES] OF t_ATTRPNTR
   nde : LAYOUT_STRUCT
@@ -44,6 +45,7 @@ csv_make_define(CSV_OBJECT_NAME)
 %endif
 
 %include systemlib.datatype.klh
+%from strings.klh %import takeNextStr, takeStr
 
 --load template specific includes
 header_includes
@@ -89,11 +91,14 @@ ROUTINE new
     --select file type
     filetyp = LAYOUT_FILE_TYPE
 
+    --get filename without extension
+    filename = takeStr(fname, '.')
+
     --clear buffer
     clear_buffer
 
     --initialize read file
-    loadfile(filename)
+    loadfile(fname)
 
     --load attributes
     createAttr
