@@ -8,6 +8,8 @@ ROUTINE openfile
   BEGIN
     `CSV_OBJECT_NAME`__open_read
     `CSV_OBJECT_NAME`__read_header
+
+    linenum = 0
   END openfile
 
 ROUTINE isFileOpen
@@ -32,6 +34,7 @@ ROUTINE deletefile
 
 ROUTINE readfile : BOOLEAN
   BEGIN
+      linenum = linenum + 1
       RETURN(`CSV_OBJECT_NAME`__read_line)
   END readfile
 

@@ -3,6 +3,9 @@
 -- define file type (i.e. csv, gcode, etc...)
 %defeval LAYOUT_FILE_TYPE CSV_TYPE
 
+-- define type for storing instances
+%define INSTANCE_TYPE t_INTEGER
+
 --csv object
 ------------------
 %define CSV_OBJECT_NAME tstcsv
@@ -16,6 +19,10 @@
 $
 
 %define header_includes $
+
+$
+
+%define var_includes $
 
 $
 %mode pop
@@ -127,6 +134,11 @@ ROUTINE detIndexBase
     fileAttr(attribPntrs[2])
     indexBase = data.int
   END detIndexBase
+ROUTINE counter_cond
+  BEGIN
+    --count the number of passes per layer
+      counter = counter + 1
+  END counter_cond
 ROUTINE countInstances
   VAR
     i, status : INTEGER

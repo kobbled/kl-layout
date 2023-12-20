@@ -25,8 +25,11 @@ VAR
   nde : LAYOUT_STRUCT
   buffer : PATH nodedata = LAYOUT_STRUCT
   prev_data : t_DATA_TYPE
-  buffernum : INTEGER -- keep track of how many buffer cycles have been completed
+  linenum, buffernum : INTEGER -- keep track of how many buffer cycles have been completed
   indexBase : INTEGER --specify the base of the array index (i.e. 0 or 1)
+  counter : INTEGER
+--define interface variables
+var_includes
 
 -- reference to 'data' attribute in CSV_OBJECT_NAME
 %include csvclass.friends.klt
@@ -75,6 +78,11 @@ ROUTINE clear_buffer
       i = i - 1
 	  ENDWHILE
   END clear_buffer
+
+ROUTINE reset_counter
+  BEGIN
+    counter = 0
+  END reset_counter
 
 ROUTINE new
   BEGIN
@@ -127,6 +135,16 @@ ROUTINE get_buffer_cycles
     RETURN(buffernum)
   END get_buffer_cycles
 
+ROUTINE get_current_index
+  BEGIN
+    RETURN(linenum)
+  END get_current_index
+
+ROUTINE get_counter
+  BEGIN
+    RETURN(counter)
+  END get_counter
+
 -- user macro
 impl_deserialize
 
@@ -149,6 +167,9 @@ ROUTINE loadBuffer
 
     --clear buffer
     clear_buffer
+
+    --reset counter
+    counter = 0
 
     --read lines into pipe
     i = 1
@@ -175,6 +196,9 @@ ROUTINE loadBuffer
         APPEND_NODE(buffer,status)
         deserialize
         buffer[PATH_LEN(buffer)] = nde
+
+        -- increment counter on condition
+        counter_cond(nde)
       ENDIF
       
       i = i + 1
