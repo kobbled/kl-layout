@@ -22,6 +22,40 @@ $
 %include xml.klh
 $
 
+%define var_includes $
+  block : t_block
+  layer : t_layers
+  fxml : FILE
+$
+%mode pop
+
+-- name of struct
+%define LAYOUT_STRUCT T_CSVPATH
+--members in struct
+%mode push
+%mode string QQQ "`" "`" "\\"
+%define layout_type `TYPE
+  LAYOUT_STRUCT FROM layout = STRUCTURE
+    layer  : INTEGER
+    code   : INTEGER
+    depth  : REAL
+    pose   : VECTOR
+    orient : VECTOR
+  ENDSTRUCTURE
+
+  t_layers = STRUCTURE
+    num : SHORT
+    passes : SHORT
+    startln : INTEGER
+    endln : INTEGER
+  ENDSTRUCTURE
+
+  t_block = STRUCTURE
+    layers : INTEGER
+  ENDSTRUCTURE
+`
+%mode pop
+
 ------------------
 --attributes
 -------------------------
@@ -128,6 +162,13 @@ ROUTINE detIndexBase
     fileAttr(attribPntrs[1])
     indexBase = data.int
   END detIndexBase
+ROUTINE counter_cond
+  BEGIN
+    --count the number of passes per layer
+    IF n.code = PTH_CLOSE THEN
+      counter = counter + 1
+    ENDIF
+  END counter_cond
 ROUTINE countInstances
   VAR
     i, status : INTEGER

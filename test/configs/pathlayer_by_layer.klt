@@ -148,6 +148,13 @@ ROUTINE detIndexBase
     fileAttr(attribPntrs[1])
     indexBase = data.int
   END detIndexBase
+ROUTINE counter_cond
+  BEGIN
+    --count the number of passes per layer
+    IF n.code = PTH_CLOSE THEN
+      counter = counter + 1
+    ENDIF
+  END counter_cond
 ROUTINE countInstances
   VAR
     i, status : INTEGER
