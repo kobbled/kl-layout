@@ -1,0 +1,148 @@
+%include define_type.m
+
+-- define file type (i.e. csv, gcode, etc...)
+%defeval LAYOUT_FILE_TYPE CSV_TYPE
+
+-- define type for storing instances
+%define INSTANCE_TYPE t_layers
+
+--csv object
+------------------
+%define CSV_OBJECT_NAME tstcsv
+
+--template dependencies
+---------------
+%mode push
+%mode string QQQ "$" "$" "\\"
+%define type_includes $
+%include pathlib.klt
+$
+
+%define header_includes $
+%include xml.klh
+$
+
+------------------
+--attributes
+-------------------------
+%define NUM_OF_ATTRIBUTES 5
+
+%mode push
+%mode string QQQ "`" "`" "\\"
+%define impl_attrs `
+ROUTINE createAttr
+  BEGIN
+    --layer
+    attribPntrs[1] = new_attr_pntr(1, 1, '', '', ',', C_INT)
+    --path code
+    attribPntrs[2] = new_attr_pntr(2, 1, '', '', ',', C_INT)
+    --depth to surface
+    attribPntrs[3] = new_attr_pntr(3, 1, '', '', ',', C_REAL)
+    --coordinate
+    attribPntrs[4] = new_attr_pntr(4, 1, '', '', ',', C_VEC)
+    --orientation
+    attribPntrs[5] = new_attr_pntr(7, 1, '', '', ',', C_VEC)
+  END createAttr
+`
+%mode pop
+
+-------------------------
+--layout
+-------------------------
+
+%mode push
+%mode string QQQ "`" "`" "\\"
+%define impl_deserialize `
+ROUTINE deserialize
+  BEGIN
+    --copy attributes into user defined struct
+    fileAttr(attribPntrs[1])
+    nde.layer = (data.int)
+    fileAttr(attribPntrs[2])
+    nde.code = (data.int)
+    fileAttr(attribPntrs[3])
+    nde.depth = (data.rl)
+    fileAttr(attribPntrs[4])
+    nde.pose = (data.vec)
+    fileAttr(attribPntrs[5])
+    nde.orient = (data.vec)
+  END deserialize
+`
+%mode pop
+
+-------------------------
+--buffering
+-------------------------
+--buffer conditions
+%define MAX_BUFFER_LINES 1000
+
+--buffer loading condition
+  --load per layer
+%mode push
+%mode string QQQ "`" "`" "\\"
+%define impl_buffer_condition `
+  ROUTINE buffer_cond : BOOLEAN
+    VAR
+      lns : INTEGER
+    BEGIN
+      IF endoffile THEN RETURN(FALSE); ENDIF
+
+      --if at least one line has been written to the pipe evauluate
+      IF PATH_LEN(buffer) > 0 THEN
+        --read layer attribute
+        fileAttr(attribPntrs[2])
+      
+        -- If read indicates we are on the next pass, exit buffer condition.
+        IF data.int = 1 THEN
+          -- make copy of data for next evaluation cycle
+          copyFileData(prev_data)
+          --on next layer, break loop.
+          RETURN(FALSE)
+        ENDIF
+
+        -- make copy of data for next evaluation cycle
+        copyFileData(prev_data)
+        -- still on the same pass continue
+        RETURN(TRUE)
+      ELSE
+        --read layer attribute for the next iteration
+        fileAttr(attribPntrs[2])
+        copyFileData(prev_data)
+        
+        --first row continue
+        RETURN(TRUE)
+      ENDIF
+    END buffer_cond
+`
+%mode pop
+
+-------------------------
+--instances
+-------------------------
+
+%mode push
+%mode string QQQ "`" "`" "\\"
+%define impl_instance `
+ROUTINE detIndexBase
+  BEGIN
+    fileAttr(attribPntrs[1])
+    indexBase = data.int
+  END detIndexBase
+ROUTINE countInstances
+  VAR
+    i, status : INTEGER
+  BEGIN
+    --get number of layers
+    xml__get_attributes(filename + '.xml', fxml, 'block', 1, '[BASE_CLASSNAME]block')
+    
+    --store number of passes in each layer
+    FOR i = 1 TO block.layers DO
+      xml__get_attributes(filename + '.xml', fxml, 'layer', i, '[BASE_CLASSNAME]layer')
+      
+      APPEND_NODE(out_pth,status)
+      out_pth[PATH_LEN(out_pth)] = layer
+    ENDFOR
+
+  END countInstances
+`
+%mode pop
