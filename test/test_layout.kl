@@ -5,17 +5,29 @@ PROGRAM test_layout
 %include systemlib.datatypes.klt
 %include pose.const.klt
 
+TYPE
+  t_layers FROM tstlps = STRUCTURE
+    num : SHORT
+    passes : SHORT
+    startln : INTEGER
+    endln : INTEGER
+  ENDSTRUCTURE
+
 CONST
   SPATH_NAME = 'FR:test3599.csv'
   POLY_NAME = 'FR:mpoly0001.csv'
 VAR
   eof : BOOLEAN
   instances : PATH nodedata = t_INTEGER
+  layers : PATH nodedata = t_layers
 
 %include display.klh
 
 -- layout static path object
-%class tstlay('layout.klc','layout.klh','defaultlayout.klt')
+  -- xml preprocess by pass
+%class tstlps('layout.klc','layout.klh','pathlayer_by_pass.klt')
+  -- full load by layer
+%class tstlay('layout.klc','layout.klh','pathlayer_by_layer.klt')
 
 -- layout polygon object
 %class tstldw('layout.klc','layout.klh','defaultpolylayout.klt')
@@ -33,7 +45,19 @@ ROUTINE clear_list(p : PATH nodedata = t_INTEGER)
 	  ENDWHILE
   END clear_list
 
-ROUTINE t_spth_buff
+ROUTINE clear_layers(p : PATH nodedata = t_layers)
+  VAR
+    i : INTEGER
+    status : INTEGER
+  BEGIN
+    i = PATH_LEN(p)
+    WHILE PATH_LEN(p) > 0 DO
+		  DELETE_NODE(p,i,status)
+      i = i - 1
+	  ENDWHILE
+  END clear_layers
+
+ROUTINE t_lay_buff
   VAR
     i : INTEGER
     layers : INTEGER
@@ -70,11 +94,60 @@ ROUTINE t_spth_buff
     --load per layer
     REPEAT
       eof = tstlay__loadBuffer
-      WRITE TPDISPLAY('L', tstlay__get_buffer_cycles, ': eof', eof, ',', tstlay__bufferLength, ' nodes', CR)
+      WRITE TPDISPLAY('L', tstlay__get_buffer_cycles, ': eof', eof, tstlay__get_counter, ' p', ',', tstlay__bufferLength, ' n', CR)
     UNTIL(eof)
 
     tstlay__closefile
-  END t_spth_buff
+  END t_lay_buff
+
+ROUTINE t_pass_buff
+  VAR
+    i, l : INTEGER
+    passes, ndes : INTEGER
+    no_of_layers : INTEGER
+  BEGIN
+    --clear instances
+    clear_layers(layers)
+
+    --construct
+    tstlps__new(SPATH_NAME)
+    
+    --count the number of passes per layer
+    tstlps__countInstances(layers)
+
+    --get number of layers
+    no_of_layers = PATH_LEN(layers)
+
+    --print
+    WRITE TPDISPLAY('total Layers: ', no_of_layers, CR)
+    FOR i=1 TO PATH_LEN(layers) DO
+      WRITE TPDISPLAY('L', layers[i].num, ': ', layers[i].passes, ' passes', CR)
+    ENDFOR
+    
+    -- ** Load layers into a path buffer **
+    
+    tstlps__openfile
+
+    --load per layer
+    l = 1
+    passes = 0
+    ndes = 0
+    REPEAT
+      eof = tstlps__loadBuffer
+      --sum number of nodes per layer
+      ndes = ndes + tstlps__bufferLength
+      --increment number of passes per layer
+      passes = passes + 1
+      IF (tstlps__get_current_index > layers[l].endln) THEN
+        WRITE TPDISPLAY('L', l, ':eof', eof, ',', passes, ' p', ndes, ' n', CR)
+        l = l + 1
+        ndes = 0
+        passes = 0
+      ENDIF
+    UNTIL(eof)
+
+    tstlps__closefile
+  END t_pass_buff
 
 ROUTINE t_sply_buff
   VAR
@@ -126,13 +199,14 @@ BEGIN
   display__show
 
   --static path file
-  t_spth_buff
+  --t_lay_buff
+  t_pass_buff
 
-  --polygon file
-  t_sply_buff
+  -- --polygon file
+  -- t_sply_buff
   
-  --delete
-  tstlay__delete
-  tstldw__delete
+  -- --delete
+  -- tstlay__delete
+  -- tstldw__delete
 
 END test_layout
