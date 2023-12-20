@@ -12,6 +12,7 @@
   "tests" : [
     "test/test_layout.kl",
     "test/data/test3599.csv",
+    "test/data/test3599.xml",
     "test/data/mpoly0001.csv"
   ],
   "tests-includes" :[
@@ -20,8 +21,10 @@
   "depends" : [
     "ktransw-macros",
     "errors",
+    "Strings",
     "systemlib",
-    "csv"
+    "csv",
+    "xml"
   ],
   "tests-depends" :  [
     "display",

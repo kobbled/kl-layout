@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<block layers="3">
+	<layer num="1" passes="11" startln="1" endln="160"/>
+	<layer num="2" passes="10" startln="161" endln="505"/>
+  <layer num="3" passes="11" startln="506" endln="1011"/>
+</block>
